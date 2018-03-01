@@ -1,0 +1,38 @@
+# keys_zone=10m is ~80k keys
+# https://www.nginx.com/blog/nginx-caching-guide/
+proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=my_cache:@KEYS_ZONE_SIZE@ max_size=@MAX_SIZE@
+                 inactive=@TTL@ use_temp_path=off;
+
+
+server {
+    listen 80;
+
+# HTTPS_BEGIN
+
+    listen 443 ssl;
+
+    ssl_certificate                     /etc/ssl/certs/cert.crt;
+    ssl_certificate_key                 /etc/ssl/certs/cert.key;
+    ssl_ciphers                         HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+    ssl_prefer_server_ciphers           on;
+    ssl_protocols                       TLSv1 TLSv1.1 TLSv1.2;
+
+# HTTPS_END
+
+    location / {
+        proxy_cache                     my_cache;
+        proxy_cache_lock                on;
+        proxy_cache_min_uses            1;
+        proxy_cache_revalidate          on;
+        proxy_cache_use_stale           error timeout updating http_500 http_502 http_503 http_504;
+        proxy_cache_valid               any @TTL@;
+        proxy_ignore_headers            Cache-Control Expires Set-Cookie;
+        proxy_max_temp_file_size        0;
+        proxy_pass                      @REMOTE_PROTOCOLE@://@REMOTE_HOST@;
+        proxy_set_header                Host @REMOTE_HOST@;
+    }
+
+    access_log /dev/stdout;
+    error_log /dev/stderr;
+}
+
