@@ -28,7 +28,8 @@ server {
         proxy_cache_valid               any @TTL@;
         proxy_ignore_headers            Cache-Control Expires Set-Cookie;
         proxy_max_temp_file_size        0;
-        proxy_pass                      @REMOTE_PROTOCOLE@://@REMOTE_HOST@;
+        proxy_next_upstream             error;
+        proxy_pass                      @REMOTE_PROTOCOLE@://@REMOTE_IP@;
         proxy_set_header                Host @REMOTE_HOST@;
     }
 

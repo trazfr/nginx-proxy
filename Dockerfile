@@ -10,6 +10,7 @@ RUN apk add --no-cache nginx \
 COPY rootfs/ /
 ENV REMOTE_PROTOCOLE=https \
     REMOTE_HOST=www.example.com \
+    REMOTE_IP= \
     KEYS_ZONE_SIZE=10m \
     TTL=1d \
     SSL_CERT=/opt/cert.crt \
